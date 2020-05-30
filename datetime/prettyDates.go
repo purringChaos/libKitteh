@@ -46,7 +46,7 @@ func timeStr(t time.Time, c PrettyConfig) string {
 		end = "am"
 	}
 
-	if c.Use12HourTime {
+	if !c.Use12HourTime {
 		end = ""
 	}
 
