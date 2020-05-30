@@ -35,7 +35,7 @@ func timeStr(t time.Time, c PrettyConfig) string {
 	var end string
 	var hour int
 	if t.Hour() >= 12 {
-		if t.Hour() >= 13 && !c.Use12HourTime {
+		if t.Hour() >= 13 && c.Use12HourTime {
 			hour = t.Hour() - 12
 		} else {
 			hour = t.Hour()
@@ -46,7 +46,7 @@ func timeStr(t time.Time, c PrettyConfig) string {
 		end = "am"
 	}
 
-	if !c.Use12HourTime {
+	if c.Use12HourTime {
 		end = ""
 	}
 
