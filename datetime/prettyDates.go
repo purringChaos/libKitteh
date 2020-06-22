@@ -102,8 +102,8 @@ type TimeDateContainer struct {
 func PrettyStruct(t time.Time, c PrettyConfig) TimeDateContainer {
 	tdc := TimeDateContainer{}
 	tdc.Weekday = t.Weekday().String()
-	tdc.Day = ordinal(t.Day())
-	tdc.DayOrdinal = strconv.Itoa(t.Day())
+	tdc.DayOrdinal = ordinal(t.Day())
+	tdc.Day = strconv.Itoa(t.Day())
 	tdc.Month = t.Month().String()
 	tdc.Year = strconv.Itoa(t.Year())
 	tc := timeFromConfig(t, c)
