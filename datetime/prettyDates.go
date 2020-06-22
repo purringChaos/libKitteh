@@ -28,12 +28,34 @@ func ordinal(x int) string {
 			suffix = "rd"
 		}
 	}
-	return strconv.Itoa(x) + suffix
+	return suffix
 }
 
-func timeStr(t time.Time, c PrettyConfig) string {
+type TimeContainer struct {
+    Hour string
+    Minutes string
+    Seconds string
+    Ending string
+}
+
+func timeContainerToString(tc TimeContainer) string {
+	var s string
+	s = tc.Hour + ":" + tc.Minutes
+	if tc.Seconds != "" {
+		s = s + ":" + tc.Seconds
+	}
+	s = s + tc.Ending
+	return s
+}
+
+func fmt2Int(i int) string {
+    return fmt.Sprintf("%02d", i)
+}
+
+func timeFromConfig(t time.Time, c PrettyConfig) TimeContainer {
+    var hour int
+    var seconds string
 	var end string
-	var hour int
 	if t.Hour() >= 12 {
 		if t.Hour() >= 13 && c.Use12HourTime {
 			hour = t.Hour() - 12
@@ -50,24 +72,44 @@ func timeStr(t time.Time, c PrettyConfig) string {
 		end = ""
 	}
 
-	str := fmt.Sprintf("%02d:%02d",
-		hour,
-		t.Minute())
-
 	if (t.Second() != 0 || !c.RemoveEmptySeconds) && !c.HideSeconds {
-		str = str + fmt.Sprintf(":%02d", t.Second())
+		seconds = fmt2Int(t.Second())
 	}
-	str = str + end
 
-	return str
+	return TimeContainer{fmt2Int(hour), fmt2Int(t.Minute()), seconds, end}
 }
 
 func Pretty(t time.Time, c PrettyConfig) string {
 	return fmt.Sprintf("%s the %s of %s in %d at %s",
 		t.Weekday().String(),
-		ordinal(t.Day()),
+		strconv.Itoa(t.Day()) + ordinal(t.Day()),
 		t.Month().String(),
 		t.Year(),
-		timeStr(t, c),
+		timeContainerToString(timeFromConfig(t, c)),
 	)
+}
+
+type TimeDateContainer struct {
+	TimeContainer
+	Weekday string
+	Day string
+	DayOrdinal string
+	Month string
+	Hour string
+	Year string
+}
+
+func PrettyStruct(t time.Time, c PrettyConfig) TimeDateContainer {
+	tdc := TimeDateContainer{}
+	tdc.Weekday = t.Weekday().String()
+	tdc.Day = ordinal(t.Day())
+	tdc.DayOrdinal = strconv.Itoa(t.Day())
+	tdc.Month = t.Month().String()
+	tdc.Year = strconv.Itoa(t.Year())
+	tc := timeFromConfig(t, c)
+	tdc.Hour = tc.Hour
+	tdc.Minutes = tc.Minutes
+	tdc.Seconds = tc.Seconds
+	tdc.Ending = tc.Ending
+	return tdc
 }
